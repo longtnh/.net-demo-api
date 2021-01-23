@@ -10,5 +10,6 @@ namespace DemoWebAPI.Services
         Product AddProduct(Product productItem);
         Product UpdateProduct(string id, Product productItem);
         string DeleteProduct(string id);
+        IEnumerable<Product> GetSearchProducts(string searchString);
     }
 }

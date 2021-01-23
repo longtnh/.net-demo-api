@@ -8,12 +8,7 @@ namespace DemoWebAPI.Services
 {
     public class ProductsService : IProductsService
     {
-        private List<Product> _productItems = new List<Product>()
-        {
-            new Product{ID="1",Name="Samsung Galaxy S21",Brand="Samsung"},
-            new Product{ID="2",Name="Samsung Galaxy S21 Ultra",Brand="Samsung"},
-            new Product{ID="3",Name="Samsung Galasy S21e",Brand="Samsung"},
-        };
+        private List<Product> _productItems = new List<Product>();
 
         public ProductsService()
         {
@@ -60,6 +55,9 @@ namespace DemoWebAPI.Services
             return id;
         }
 
-
+        public IEnumerable<Product> GetSearchProducts(string searchString)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

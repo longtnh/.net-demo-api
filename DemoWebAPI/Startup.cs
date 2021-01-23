@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DemoWebAPI.Services;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace DemoWebAPI
 {
@@ -27,9 +29,11 @@ namespace DemoWebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<ProductsContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("ProductConnection")));
             services.AddControllers();
-            services.AddSingleton<IProductsService, ProductsService>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            //services.AddSingleton<IProductsService, ProductsService>();
+            services.AddScoped<IProductsService, ProductsSQLService>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "DemoWebAPI", Version = "v1" });

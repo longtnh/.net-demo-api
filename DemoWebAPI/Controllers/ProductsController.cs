@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DemoWebAPI.Services;
 using DemoWebAPI.Models;
-using Microsoft.Extensions.Logging;
+using DemoWebAPI.Dtos;
+using AutoMapper;
 
 namespace DemoWebAPI.Controllers
 {
@@ -14,15 +13,13 @@ namespace DemoWebAPI.Controllers
     public class ProductsController : ControllerBase
     {
 
-        private ILogger _logger;
         private IProductsService _service;
+        private IMapper _mapper;
 
-
-        public ProductsController(ILogger<ProductsController> logger, IProductsService service)
+        public ProductsController(IProductsService service, IMapper mapper)
         {
-            _logger = logger;
             _service = service;
-
+            _mapper = mapper;
         }
 
         [HttpGet("/api/products")]
@@ -32,14 +29,14 @@ namespace DemoWebAPI.Controllers
         }
 
         [HttpGet("/api/products/{id}")]
-        public ActionResult<Product> GetProductsById(string id)
+        public ActionResult<ProductReadDto> GetProductsById(string id)
         {
             var product = _service.GetProductById(id);
-            if(product == null)
+            if(product != null)
             {
-                NotFound();
+                return Ok(_mapper.Map<ProductReadDto>(product));
             }
-            return Ok(product);
+            return NotFound();
         }
 
         [HttpPost("/api/products")]
@@ -52,6 +49,11 @@ namespace DemoWebAPI.Controllers
         [HttpPut("/api/products/{id}")]
         public ActionResult<Product> UpdateProduct(string id, Product product)
         {
+            var productUpdate = _service.GetProductById(id);
+            if(productUpdate == null)
+            {
+                return NotFound();
+            }
             _service.UpdateProduct(id, product);
             return Ok(product);
         }
@@ -59,8 +61,23 @@ namespace DemoWebAPI.Controllers
         [HttpDelete("/api/products/{id}")]
         public ActionResult<string> DeleteProduct(string id)
         {
+            var productDelete = _service.GetProductById(id);
+            if(productDelete == null)
+            {
+                return NotFound();
+            }
             _service.DeleteProduct(id);
             return Ok(id);
+        }
+        [HttpGet("/api/products/search={searchString}")]
+        public ActionResult<IEnumerable<Product>> GetSearchProducts(string searchString)
+        {
+            var productSearch = _service.GetSearchProducts(searchString);
+            if(!productSearch.Any())
+            {
+                return NotFound();
+            }
+            return productSearch.ToList();
         }
     }
 }
